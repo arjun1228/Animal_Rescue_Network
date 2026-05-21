@@ -6,3 +6,6 @@ build/
 *.log
 .docx
 .pdf
+PROJECT_REVIEW.md
+PROJECT_WORKFLOW.md
+animal_rescue_workflow.md
