@@ -1,33 +1,58 @@
+<div align="center">
+
 # 🐾 Animal Rescue Network
 
-The **Animal Rescue Network** is a full-stack MERN application designed to streamline the reporting, rescuing, and rehabilitation of stray animals in distress. By connecting everyday citizens, dedicated volunteers, generous donors, and platform administrators, it creates a centralized hub to coordinate rescue missions, raise funds for medical treatments, and track activities transparently.
+### A Centralized Stray Animal Rescue & Crowdfunding Hub
+
+[![React Vite](https://img.shields.io/badge/React_Vite-%2320232a.svg?style=flat&logo=react&logoColor=%2361DAFB)](https://react.dev/)
+[![Node.js Express](https://img.shields.io/badge/Node.js_Express-%23339933.svg?style=flat&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![MongoDB Atlas](https://img.shields.io/badge/MongoDB_Atlas-%2347A248.svg?style=flat&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Cron Jobs](https://img.shields.io/badge/Cron_Jobs-%23000000.svg?style=flat&logo=clockify&logoColor=white)](#-automated-background-jobs-cron)
+[![Media Cloudinary](https://img.shields.io/badge/Media_Cloudinary-%233448C5.svg?style=flat&logo=cloudinary&logoColor=white)](https://cloudinary.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-%2338B2AC.svg?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+
+A modern, high-performance full-stack MERN platform. Connects everyday citizens, dedicated volunteers, generous donors, and platform administrators to streamline stray animal reporting, coordinate rescue operations, and raise funds for veterinary treatments.
+
+[Features](#-key-features) · [Roles & Permissions](#-roles--permissions-matrix) · [Project Structure](#-project-structure) · [Database Models](#-database-models-backendmodels) · [API Endpoints](#-api-routes--controllers-backend) · [Getting Started](#-setup--installation)
+
+</div>
 
 ---
 
-## 🚀 Key Features
+## ✨ Key Features
 
-*   **Role-Based Access Control (RBAC):** Tailored dashboards and interfaces for Citizens, Volunteers, Donors, and Admins.
-*   **Geospatial Rescue Mapping:** Allows citizens to pinpoint rescue locations using an interactive map, and volunteers to find nearby incidents via 2D sphere coordinates.
-*   **Real-time Operations & Status Tracking:** Real-time updates as rescue requests transition from `Pending Review` → `Approved` → `Claimed` → `In Progress` → `Completed`.
-*   **Crowdfunding & Campaigns:** Automated donation management with goal progress trackers, payment entries, and expiry dates.
-*   **Automated Background Jobs (Cron):**
-    *   **Auto-Release Failsafe:** Resets claimed rescues back to `Pending` if left unresolved for 48 hours.
-    *   **Campaign Expiry:** Closes inactive or timed-out donation campaigns.
-*   **System Audit Logging:** Comprehensive auditing of admin operations (role updates, campaign closure, rescue approval/rejection) for transparency.
-*   **Secure Authentication:** JWT-based session state stored inside secure `HttpOnly` cookies, preventing XSS and CSRF.
+### 👥 Role-Based Access Control
+Tailored dashboards and dashboards for **Citizens**, **Volunteers**, **Donors**, and **Admins** using Role-Based Access Control (RBAC).
+
+### 🗺️ Geospatial Rescue Mapping
+Reporters pin exact locations via an interactive Leaflet map. Volunteers can locate nearby distress incidents through 2D sphere geospatial queries.
+
+### 🔄 Unified Rescue Request Lifecycle
+Ensures smooth operations as rescue requests transition from `Pending Review` ➡️ `Approved` ➡️ `Claimed` ➡️ `In Progress` ➡️ `Completed` with proof uploads.
+
+### 💰 Crowdfunding Campaigns
+Automated donation management with goal progress trackers, individual payment entries, and expiry schedules.
+
+### 🕒 Automated Background Jobs (Cron)
+*   **Auto-Release Failsafe:** Reverts claimed rescues back to `Pending` if unresolved for 48 hours.
+*   **Campaign Expiry:** Automatically closes campaigns when deadlines are met.
+
+### 📜 Action Audit Logging
+Detailed tracking of administrative operations (user role updates, campaign closures, rescue approvals/rejections) to ensure transparency.
+
+### 🔐 Secure Authentication
+JWT-based sessions stored in secure `HttpOnly` cookies, shielding the platform from XSS and CSRF.
 
 ---
 
 ## 👥 Roles & Permissions Matrix
-
-The platform implements strict access controls:
 
 | Page / Feature | Citizen | Volunteer | Donor | Admin |
 | :--- | :---: | :---: | :---: | :---: |
 | **Home (`/`)** | ✅ | ✅ | ✅ | ✅ |
 | **Dashboard (`/dashboard`)** | ✅ (My Reports) | ✅ (My Reports & Claims) | ✅ | ✅ |
 | **Report a Rescue (`/report`)** | ✅ | ✅ | ✅ | ✅ |
-| **View Rescue Board (`/rescues`)** | ✅ (Own Only) | ✅ (All Approved / Claimed) | ✅ | ❌ (Redirects to Admin) |
+| **View Rescue Board (`/rescues`)** | ✅ (Own Only) | ✅ (All Approved/Claimed) | ✅ | ❌ (Redirects to Admin) |
 | **Rescue Details (`/rescues/:id`)** | ✅ | ✅ | ✅ | ❌ (Redirects to Admin) |
 | **Claim a Rescue** | ❌ | ✅ | ❌ | ❌ |
 | **Update Rescue Status** | ❌ | ✅ (Assigned Only) | ❌ | ✅ |
@@ -42,234 +67,214 @@ The platform implements strict access controls:
 ```text
 Animal_Rescue/
 ├── backend/
-│   ├── config/             # DB connection, Cloudinary, and constants
-│   ├── controllers/        # Business logic controllers
-│   ├── jobs/               # cron background tasks (autoRelease, campaignExpiry)
-│   ├── middleware/         # Auth verify, RBAC guards, multer image upload
-│   ├── models/             # Mongoose database schemas
-│   ├── routes/             # Express API routing endpoints
-│   ├── seed/               # Initial admin account seed and migration scripts
-│   ├── services/           # Nodemailer emails & notification dispatchers
-│   └── server.js           # Express app setup and job bootstrapper
+│   ├── config/             # DB connection, Cloudinary setup, and constants
+│   ├── controllers/        # Business logic handlers
+│   ├── jobs/               # Background cron tasks (autoRelease, campaignExpiry)
+│   ├── middleware/         # Auth verify, role guards, and multer file uploads
+│   ├── models/             # Mongoose schemas
+│   ├── routes/             # Express API routers
+│   ├── seed/               # Admin seed and migration scripts
+│   ├── services/           # Nodemailer email & notification builders
+│   └── server.js           # Server runner and job manager
 │
 └── frontend/
     ├── public/             # Static public assets
     └── src/
-        ├── components/     # Reusable UI components (Navbar, Footer, Maps, Analytics, Cards)
-        ├── context/        # Global auth context (AuthContext)
-        ├── pages/          # Page views (Dashboard, Admin, Detail pages, Login, Register)
-        ├── App.jsx         # Routes setup & Route Guards (ProtectedRoute, AdminRestrictedRoute)
-        ├── index.css       # Tailwind configuration imports
-        └── main.jsx        # App bootstrap, Axios default settings withCredentials
+        ├── components/     # UI elements (Navbar, Footer, Maps, Recharts Analytics, Cards)
+        ├── context/        # Global React contexts (AuthContext)
+        ├── pages/          # Page layouts (Dashboard, AdminPanel, Detail pages, Login, Register)
+        ├── App.jsx         # App router & Route guards (ProtectedRoute, AdminRestrictedRoute)
+        ├── index.css       # Core styling & Tailwind imports
+        └── main.jsx        # React bootstrapper & Axios default configs
 ```
 
 ---
 
 ## 🗄️ Database Models (backend/models/)
 
-### 1. User (`User.js`)
-Stores account credentials, profile details, and role assignments.
+### 👤 User (`User.js`)
 *   `name` (String, required): Full name.
-*   `email` (String, required, unique, lowercase): Email address.
-*   `phone` (String, required): Mobile number.
-*   `password` (String, required, minlength: 6): Hashed password.
-*   `role` (String, enum: `['citizen', 'volunteer', 'admin']`, default: `'citizen'`): Defines access level.
-*   `isAvailable` (Boolean, default: `true`): Volunteer availability toggle.
-*   `rating` (Number, default: `0`): Aggregated volunteer rescue rating (0–5).
-*   `ratingCount` (Number, default: `0`): Total ratings received.
-*   `resetPasswordToken` (String) / `resetPasswordExpiry` (Date): Fields for password reset lifecycle.
-*   *Hooks:* Pre-save bcrypt hashing for password modifications.
+*   `email` (String, required, unique, lowercase): Account email.
+*   `phone` (String, required): Active phone number.
+*   `password` (String, required, minlength: 6): Hashed credential.
+*   `role` (String, enum: `['citizen', 'volunteer', 'admin']`, default: `'citizen'`).
+*   `isAvailable` (Boolean, default: `true`): Volunteer availability flag.
+*   `rating` (Number, default: `0`): Overall volunteer rescue rating (0 to 5).
+*   `ratingCount` (Number, default: `0`): Count of ratings received.
+*   `resetPasswordToken` (String) & `resetPasswordExpiry` (Date).
 
-### 2. RescueRequest (`RescueRequest.js`)
-Tracks the status of animals reported for rescue.
-*   `reporter` (ObjectId, ref: `User`, required): The user who submitted the request.
-*   `animalType` (String, required): E.g., Dog, Cat, Bird, etc.
-*   `description` (String, required): Injury/details.
+### 🐕 RescueRequest (`RescueRequest.js`)
+*   `reporter` (ObjectId, ref: `User`, required): Submitting user.
+*   `animalType` (String, required): E.g., Dog, Cat, Bird.
+*   `description` (String, required): Health condition and comments.
 *   `location` (Object): Address (String), lat (Number), lng (Number).
-*   `photos` (Array of Strings): URLs of uploaded proof images (max 3, Cloudinary).
-*   `status` (String, enum: `['Pending Review', 'Approved', 'Rejected', 'Claimed', 'In Progress', 'Completed']`, default: `'Pending Review'`): Single source of truth.
+*   `photos` (Array of Strings): Uploaded incident proof image URLs.
+*   `status` (String, enum: `['Pending Review', 'Approved', 'Rejected', 'Claimed', 'In Progress', 'Completed']`, default: `'Pending Review'`).
 *   `rejectionReason` (String): Stored if rejected by Admin.
 *   `volunteer` (ObjectId, ref: `User`, default: null): Assigned rescuer.
-*   `completionPhoto` (String): Proof uploaded by volunteer upon completion.
-*   `geoLocation` (Object): GeoJSON Point containing `type` ('Point') and `coordinates` `[lng, lat]` for geospatial search.
-*   `ratedByReporter` (Boolean, default: `false`): Ensures reporters can rate the volunteer only once.
-*   *Indexes:* `2dsphere` sparse index on `geoLocation` for distance calculation.
+*   `completionPhoto` (String): Proof image uploaded on rescue resolution.
+*   `geoLocation` (Object): Geospatial coordinates `[lng, lat]` for distance-based queries.
+*   `ratedByReporter` (Boolean, default: `false`).
 
-### 3. Donation (`Donation.js`)
-Manages crowdsourcing campaigns for medical and treatment support.
+### 💰 Donation (`Donation.js`)
 *   `title` (String, required): Campaign title.
-*   `description` (String, required): Campaign reason/explanation.
-*   `animal` (String, required): Animal type or name.
-*   `rescueRequest` (ObjectId, ref: `RescueRequest`): Associated rescue request if applicable.
-*   `targetAmount` (Number, required): Goal amount.
-*   `collectedAmount` (Number, default: `0`): Total funds accumulated.
-*   `createdBy` (ObjectId, ref: `User`, required): Admin who created the campaign.
-*   `isActive` (Boolean, default: `true`): Active status indicator.
-*   `deadline` (Date, required): Expiry date.
+*   `description` (String, required): Goal description.
+*   `animal` (String, required): Subject animal type.
+*   `rescueRequest` (ObjectId, ref: `RescueRequest`): Optional linked rescue.
+*   `targetAmount` (Number, required): Goal target amount.
+*   `collectedAmount` (Number, default: `0`): Sum of contributions.
+*   `createdBy` (ObjectId, ref: `User`, required): Admin creator ID.
+*   `isActive` (Boolean, default: `true`).
+*   `deadline` (Date, required): Campaign deadline.
 *   `closedReason` (String, enum: `['completed', 'deadline_reached', 'admin_closed', null]`, default: `null`).
 
-### 4. DonationEntry (`DonationEntry.js`)
-Records individual transactions/donations towards a campaign.
-*   `campaignId` (ObjectId, ref: `Donation`, required): Targeted campaign.
-*   `donorName` (String, required): Name of the donor.
-*   `email` (String) / `phone` (String): Contact details.
-*   `amount` (Number, required, min: 1): Amount contributed.
+### 💳 DonationEntry (`DonationEntry.js`)
+*   `campaignId` (ObjectId, ref: `Donation`, required).
+*   `donorName` (String, required): Contributor's display name.
+*   `email` (String) & `phone` (String).
+*   `amount` (Number, required, min: 1): Contribution sum.
 *   `message` (String): Message of support.
-*   `isAnonymous` (Boolean, default: `false`): Hides donor info publicly.
+*   `isAnonymous` (Boolean, default: `false`).
 *   `donatedAt` (Date, default: `Date.now`).
 
-### 5. Notification (`Notification.js`)
-Stores user-specific notifications generated by the system.
+### 🔔 Notification (`Notification.js`)
 *   `userId` (ObjectId, ref: `User`, required): Target recipient.
-*   `type` (String, required): Notification trigger type (e.g. `'RESCUE_CLAIMED'`, `'RESCUE_COMPLETED'`).
-*   `message` (String, required): Alert message.
-*   `isRead` (Boolean, default: `false`): Read/unread status.
+*   `type` (String, required): System trigger classification.
+*   `message` (String, required): Context content.
+*   `isRead` (Boolean, default: `false`).
 
-### 6. AuditLog (`AuditLog.js`)
-Tracks administrative changes for operational monitoring.
-*   `adminId` (ObjectId, ref: `User`, required): Admin executing the change.
-*   `action` (String, required): Action type (e.g. `ROLE_CHANGED`, `RESCUE_APPROVED`, `RESCUE_REJECTED`, `CAMPAIGN_CREATED`).
-*   `targetId` (ObjectId, refPath: `targetModel`): Reference to target document.
-*   `targetModel` (String, enum: `['User', 'RescueRequest', 'Donation']`): Target model name.
-*   `targetLabel` (String): Readable summary of target (e.g., target's name or title).
-*   `oldValue` (String) / `newValue` (String): Before and after state values.
-*   `ip` (String): Admin client IP address.
+### 📜 AuditLog (`AuditLog.js`)
+*   `adminId` (ObjectId, ref: `User`, required): Initiating Admin ID.
+*   `action` (String, required): Target modification action.
+*   `targetId` (ObjectId, refPath: `targetModel`): Target document.
+*   `targetModel` (String, enum: `['User', 'RescueRequest', 'Donation']`).
+*   `targetLabel` (String): Human-friendly name of target object.
+*   `oldValue` (String) & `newValue` (String): Change details.
+*   `ip` (String): Creator's IP address.
 
 ---
 
 ## 🔌 API Routes & Controllers (backend/)
 
-All api paths are prefixed with `/api`.
+All route paths prefix with `/api`.
 
-### 1. Authentication (`/api/auth` ➡️ `authController.js`)
-*   `POST /register` – Register a new citizen or volunteer account. (Rate limited)
-*   `POST /login` – Log in and receive a secure HTTP-Only cookie. (Rate limited)
-*   `POST /logout` – Clear HTTP-Only cookie.
-*   `GET /me` – Restores user session if cookie is present. *(Protected)*
-*   `POST /forgot-password` – Sends a password reset token via Nodemailer email.
-*   `POST /reset-password/:token` – Validates reset token and sets new password.
-
-### 2. Rescue Operations (`/api/rescue` ➡️ `rescueController.js`)
-*   `GET /` – Fetch all approved rescue requests. *(Protected)*
-*   `GET /my` – Fetch requests reported by the logged-in user. *(Protected)*
-*   `GET /claimed` – Fetch requests claimed by the active volunteer. *(Protected, Volunteer/Admin)*
-*   `GET /nearby` – Fetch nearby rescues based on radius (latitude, longitude). *(Protected)*
-*   `GET /:id` – Get single rescue details. *(Protected)*
-*   `POST /` – Report a rescue (uploads up to 3 photos to Cloudinary). *(Protected)*
-*   `PUT /:id/claim` – Claim a pending rescue request. *(Protected, Volunteer/Admin)*
-*   `PUT /:id/status` – Update progress status, optional upload of 1 resolution proof photo. *(Protected)*
-*   `POST /:id/rate` – Submits volunteer rating post-rescue (Reporter only, one-time). *(Protected)*
-
-### 3. Donation Campaigns (`/api/donation` ➡️ `donationController.js`)
-*   `GET /` – Browse active donation campaigns. *(Public)*
-*   `GET /:id` – Fetch campaign details and transaction history. *(Public)*
-*   `POST /:id/donate` – Add a new donation entry. *(Public, Rate limited)*
-*   `POST /` – Create a new campaign. *(Protected, Admin)*
-*   `DELETE /entry/:id` – Delete individual donation entry. *(Protected, Admin)*
-
-### 4. Admin Management (`/api/admin` ➡️ `adminController.js` & `analyticsController.js`)
-*   `GET /users` – List all system users. *(Protected, Admin)*
-*   `PUT /users/:id/role` – Update user role. *(Protected, Admin, Audited)*
-*   `GET /rescue` – List all rescues (pending review, approved, claimed, resolved). *(Protected, Admin)*
-*   `PUT /rescue/:id/approve` – Approve a pending rescue. *(Protected, Admin, Audited)*
-*   `PATCH /rescue/:id/reject` – Reject a pending rescue. *(Protected, Admin, Audited)*
-*   `DELETE /rescue/:id` – Remove/delete a rescue request. *(Protected, Admin, Audited)*
-*   `GET /rescues/export` – Export rescue request metrics to CSV format. *(Protected, Admin)*
-*   `GET /donations` – Fetch all campaigns. *(Protected, Admin)*
-*   `PATCH /campaigns/:id/close` – Close campaign manually. *(Protected, Admin, Audited)*
-*   `GET /donations/export` – Export transactions to CSV. *(Protected, Admin)*
-*   `GET /analytics/overview` – General system metrics overview. *(Protected, Admin)*
-*   `GET /analytics/rescues-by-month` – Data format for Monthly Rescue charts. *(Protected, Admin)*
-*   `GET /analytics/donations-by-campaign` – Data format for Donation progress charts. *(Protected, Admin)*
-*   `GET /audit-logs` – Retrieve administrative action logs. *(Protected, Admin)*
-
-### 5. Notifications (`/api/notifications` ➡️ `notificationController.js`)
-*   `GET /` – Fetch all notifications for the active user. *(Protected)*
-*   `PATCH /read-all` – Mark all user notifications as read. *(Protected)*
-*   `PATCH /:id/read` – Mark a single notification as read. *(Protected)*
-
-### 6. Volunteer Profiles (`/api/volunteer` ➡️ `volunteerController.js`)
-*   `GET /stats` – Fetch statistics (completed, claimed rescues, rating) for the active volunteer. *(Protected, Volunteer/Admin)*
-*   `PATCH /availability` – Toggle current active status (Available/Unavailable). *(Protected, Volunteer/Admin)*
+| Module | Route | Method | Access | Description |
+| :--- | :--- | :---: | :---: | :--- |
+| **Auth** | `/api/auth/register` | `POST` | Public | Register new citizen/volunteer |
+| **Auth** | `/api/auth/login` | `POST` | Public | Login & receive cookie |
+| **Auth** | `/api/auth/logout` | `POST` | Public | Clear login cookie |
+| **Auth** | `/api/auth/me` | `GET` | Protected | Restore active user session |
+| **Auth** | `/api/api/auth/forgot-password` | `POST` | Public | Generate reset token email |
+| **Auth** | `/api/auth/reset-password/:token` | `POST` | Public | Set new password |
+| **Rescue** | `/api/rescue` | `GET` | Protected | Fetch approved rescue requests |
+| **Rescue** | `/api/rescue/my` | `GET` | Protected | Fetch reporter's own submissions |
+| **Rescue** | `/api/rescue/claimed`| `GET` | Vol/Admin | Fetch claimed tasks |
+| **Rescue** | `/api/rescue/nearby` | `GET` | Protected | Query rescues within search radius |
+| **Rescue** | `/api/rescue/:id` | `GET` | Protected | Fetch rescue details |
+| **Rescue** | `/api/rescue` | `POST` | Protected | Report animal (+ up to 3 photos) |
+| **Rescue** | `/api/rescue/:id/claim`| `PUT` | Vol/Admin | Claim a pending request |
+| **Rescue** | `/api/rescue/:id/status`| `PUT` | Protected | Update rescue progress status |
+| **Rescue** | `/api/rescue/:id/rate` | `POST` | Protected | Rate volunteer (reporter only) |
+| **Donation** | `/api/donation` | `GET` | Public | Browse ongoing campaigns |
+| **Donation** | `/api/donation/:id` | `GET` | Public | Fetch campaign profile & list |
+| **Donation** | `/api/donation/:id/donate`| `POST` | Public | Contribute (Rate limited) |
+| **Donation** | `/api/donation` | `POST` | Admin | Launch new campaign |
+| **Donation** | `/api/donation/entry/:id`| `DELETE`| Admin | Delete donation record |
+| **Admin** | `/api/admin/users` | `GET` | Admin | List all registered users |
+| **Admin** | `/api/admin/users/:id/role`| `PUT` | Admin | Modify user roles (Audited) |
+| **Admin** | `/api/admin/rescue` | `GET` | Admin | Monitor all status boards |
+| **Admin** | `/api/admin/rescue/:id/approve`| `PUT`| Admin | Approve pending request (Audited) |
+| **Admin** | `/api/admin/rescue/:id/reject`| `PATCH`| Admin | Reject request (Audited) |
+| **Admin** | `/api/admin/rescue/:id` | `DELETE`| Admin | Delete request (Audited) |
+| **Admin** | `/api/admin/rescues/export`| `GET` | Admin | Download rescues CSV |
+| **Admin** | `/api/admin/donations` | `GET` | Admin | Monitor all campaign data |
+| **Admin** | `/api/admin/campaigns/:id/close`| `PATCH`| Admin | Close campaign manually (Audited) |
+| **Admin** | `/api/admin/donations/export`| `GET` | Admin | Download donations CSV |
+| **Admin** | `/api/admin/analytics/overview`| `GET` | Admin | Get main overview counts |
+| **Admin** | `/api/admin/analytics/rescues-by-month`| `GET`| Admin| Monthly rescue charts data |
+| **Admin** | `/api/admin/analytics/donations-by-campaign`| `GET`| Admin| Campaign progress stats |
+| **Admin** | `/api/admin/audit-logs`| `GET` | Admin | Fetch admin action audit trail |
+| **Notify** | `/api/notifications` | `GET` | Protected | Fetch current user notifications |
+| **Notify** | `/api/notifications/read-all`| `PATCH`| Protected | Mark all read |
+| **Notify** | `/api/notifications/:id/read`| `PATCH`| Protected | Mark individual read |
+| **Volunteer**| `/api/volunteer/stats` | `GET` | Vol/Admin | Get rescue/rating stats |
+| **Volunteer**| `/api/volunteer/availability`| `PATCH`| Vol/Admin | Toggle active status |
 
 ---
 
 ## 🎨 Frontend Architecture (frontend/)
 
-### Contexts
-*   **AuthContext (`AuthContext.jsx`):** Provides global authentication state (`user`, `loading`), standard authentication actions (`login`, `logout`), and handles auto-restoration of user sessions via cookies.
+### State Management Contexts
+*   **AuthContext (`AuthContext.jsx`):** Manages user session state (`user`), boot validations (`loading`), credentials submissions, and HTTP-only cookie clearing actions.
 
-### Page Views (Pages)
-*   **Home (`Home.jsx`):** Landing page featuring statistics, ongoing campaigns, user reviews, and platform details.
-*   **Login & Register (`Login.jsx`, `Register.jsx`):** User authentication pages.
-*   **Forgot & Reset Password (`ForgotPasswordPage.jsx`, `ResetPasswordPage.jsx`):** Email-token based password reset flow.
-*   **Dashboard (`Dashboard.jsx`):** Main tracking board. Citizens view "My Reports"; Volunteers view "My Reports" + "My Claimed Rescues" with toggleable availability controls.
-*   **ReportRescue (`ReportRescue.jsx`):** Submission form for reporting animals. Integrates Leaflet map for clicking and resolving location coordinates.
-*   **RescueRequests (`RescueRequests.jsx`):** Grid/list view of active rescues. Filterable by status and includes a map view using **RescueMapView**.
-*   **RescueDetail (`RescueDetail.jsx`):** Comprehensive rescue page showing status updates, photos, reporter information, and giving users the ability to rate volunteers.
-*   **DonationPortal & Detail (`DonationPortal.jsx`, `DonationDetail.jsx`):** Campaigns directory showing fundraising progress, donation logs, and target thresholds.
-*   **AdminPanel (`AdminPanel.jsx`):** Restricted admin dashboard. Contains sub-tabs for User Management, Rescue Requests approval/denial, Donation Campaigns setup, Recharts-based Visual Analytics, and System Audit Logs.
+### Pages & Views
+*   **Home (`Home.jsx`):** Public landing page showcasing summary counts, urgent donation campaigns, testimonials, and about sections.
+*   **Auth Gates:** `Login.jsx`, `Register.jsx`, `ForgotPasswordPage.jsx`, and `ResetPasswordPage.jsx` coordinate password validation and reset sequences.
+*   **Dashboard (`Dashboard.jsx`):** Personalized user screen. Citizens view reported cases; volunteers toggle availability and check assigned/completed claims.
+*   **ReportRescue (`ReportRescue.jsx`):** Form for reporting rescues. Features Leaflet map controls for coordinate picking.
+*   **Rescue Board & Details:** `RescueRequests.jsx` lists cases (with list/grid toggle and map layout). `RescueDetail.jsx` manages actions like claims, status adjustments, and volunteer rating.
+*   **Donations Portal & Details:** `DonationPortal.jsx` lists fundraising campaigns. `DonationDetail.jsx` accepts contributions and shows payment records.
+*   **AdminPanel (`AdminPanel.jsx`):** Admin control room. Integrates submenus for users, reviews, donation launches, Recharts analytics boards, and Audit log tracking.
 
-### Key UI Components
-*   **Navbar (`Navbar.jsx`):** Dynamic top navigation that adapts to user roles and supports notification integrations.
-*   **Footer (`Footer.jsx`):** Bottom footer detailing navigation, social channels, and contacts.
-*   **LocationPicker (`LocationPicker.jsx`):** Map interface allowing reporters to click, search, and pin location coordinates.
-*   **RescueMapView (`RescueMapView.jsx`):** Leaflet container rendering markers for active and pending rescue cases.
-*   **NotificationBell (`NotificationBell.jsx`):** Notification list showing system notifications and dynamic read updates.
-*   **AnalyticsDashboard (`AnalyticsDashboard.jsx`):** Charts dashboard rendered with Recharts displaying total figures, monthly rescues, and campaign targets.
+### Reusable UI Components
+*   **Navbar (`Navbar.jsx`):** Scroll-responsive layout with role-based links and notification indicators.
+*   **Footer (`Footer.jsx`):** Context footer.
+*   **LocationPicker (`LocationPicker.jsx`):** Interactive map pin dropper.
+*   **RescueMapView (`RescueMapView.jsx`):** Renders all rescue status indicators across Leaflet maps.
+*   **NotificationBell (`NotificationBell.jsx`):** Access portal to system notifications.
+*   **AnalyticsDashboard (`AnalyticsDashboard.jsx`):** Chart dashboards using Recharts components.
 
 ---
 
 ## ⚙️ Setup & Installation
 
 ### 1. Prerequisites
-*   Node.js (v18 or higher)
-*   npm or yarn
-*   MongoDB Atlas cluster (or local MongoDB database instance)
-*   Cloudinary Account (for hosting uploaded photos)
+*   Node.js (v18+)
+*   MongoDB Atlas Cluster (or local instance)
+*   Cloudinary Account
 
-### 2. Backend Configuration
-1. Navigate into the backend folder:
+### 2. Backend Config
+1. Move to backend directory:
    ```bash
    cd backend
    ```
-2. Create a `.env` file based on the following variables:
+2. Create a `.env` file with:
    ```env
    PORT=5000
    MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/animal_rescue
    JWT_SECRET=your_jwt_signing_key_here
    FRONTEND_URL=http://localhost:5173
    
-   # Cloudinary Keys
+   # Cloudinary Setup
    CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
    CLOUDINARY_API_KEY=your_cloudinary_api_key
    CLOUDINARY_API_SECRET=your_cloudinary_api_secret
    
-   # Email Configurations (Nodemailer SMTP)
+   # SMTP Email
    EMAIL_HOST=smtp.mailtrap.io
    EMAIL_PORT=2525
    EMAIL_USER=your_smtp_username
    EMAIL_PASS=your_smtp_password
    EMAIL_FROM=noreply@animalrescue.com
    ```
-3. Install dependencies:
+3. Install modules:
    ```bash
    npm install
    ```
-4. Seed the database with the default administrator account:
+4. Seed default Admin account:
    ```bash
    node seed/createAdmin.js
    ```
-   *Note: This generates the admin user with the credentials:*
+   *Admin Credentials:*
    *   **Email:** `admin@animalrescue.com`
    *   **Password:** `Admin@1234`
 
-### 3. Frontend Configuration
-1. Navigate into the frontend folder:
+### 3. Frontend Config
+1. Move to frontend directory:
    ```bash
    cd ../frontend
    ```
-2. Install dependencies:
+2. Install packages:
    ```bash
    npm install
    ```
@@ -278,16 +283,16 @@ All api paths are prefixed with `/api`.
 
 ## 🏃 Running the Application
 
-### Start Backend (Development Server)
+### Start Backend Development Server
 ```bash
 cd backend
 npm run dev
 ```
-The server will run on `http://localhost:5000`.
+Accessible at `http://localhost:5000`.
 
-### Start Frontend (Vite)
+### Start Frontend Client
 ```bash
 cd frontend
 npm run dev
 ```
-The client app will launch on `http://localhost:5173`.
+Accessible at `http://localhost:5173`.
