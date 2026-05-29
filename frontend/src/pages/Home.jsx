@@ -11,6 +11,7 @@ import { Autoplay, Pagination, EffectCards } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/effect-cards'
+import Skeleton from '../components/Skeleton'
 
 const howItWorks = [
   { step: '01', title: 'Report', desc: 'Spot a stray animal in distress and submit a rescue request instantly.', icon: ShieldAlert, image: 'https://images.unsplash.com/photo-1548681528-6a5c45b66b42?auto=format&fit=crop&q=80&w=800' },
@@ -197,9 +198,22 @@ export default function Home() {
                 </motion.div>
               )
             }) : (
-              <div className="col-span-3 text-center py-12 text-gray-500">
-                Loading urgent campaigns...
-              </div>
+              [...Array(3)].map((_, i) => (
+                <div key={i} className="bg-cream rounded-3xl overflow-hidden shadow-lg border border-gray-100">
+                  <Skeleton className="h-48 w-full rounded-none" />
+                  <div className="p-6">
+                    <Skeleton className="h-6 w-3/4 mb-4" />
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-5/6 mb-6" />
+                    <div className="mb-2 flex justify-between">
+                      <Skeleton className="h-4 w-1/4" />
+                      <Skeleton className="h-4 w-1/4" />
+                    </div>
+                    <Skeleton className="h-2.5 w-full rounded-full mb-6" />
+                    <Skeleton className="h-12 w-full rounded-xl" />
+                  </div>
+                </div>
+              ))
             )}
           </div>
           <div className="mt-8 text-center sm:hidden">

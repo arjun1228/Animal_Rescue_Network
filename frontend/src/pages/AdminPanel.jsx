@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
 import AnalyticsDashboard from '../components/AnalyticsDashboard'
+import Skeleton from '../components/Skeleton'
 import toast from 'react-hot-toast'
+import { motion } from 'framer-motion'
 
 // ── Unified status colors ────────────────────────────────────────────────────
 const statusColors = {
@@ -157,24 +159,47 @@ export default function AdminPanel() {
 
       <div className="flex gap-2 mb-6 flex-wrap">
         {tabs.map((t) => (
-          <button
+          <motion.button
             key={t}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setTab(t)}
             className={`px-4 py-2 rounded-lg text-sm font-semibold border-2 transition-colors ${tab === t ? 'bg-green-800 border-green-800 text-white' : 'border-green-800 text-green-800 hover:bg-green-50'}`}
           >
             {tabLabel(t)}
-          </button>
+          </motion.button>
         ))}
       </div>
 
-      {loading && tab !== 'analytics' && <div className="flex items-center justify-center h-32 text-gray-400">Loading...</div>}
+      {loading && tab !== 'analytics' && tab !== 'create-campaign' && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100">
+            <Skeleton className="h-6 w-48" />
+          </div>
+          <div className="p-4 space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex gap-4">
+                <Skeleton className="h-4 w-1/4" />
+                <Skeleton className="h-4 w-1/4" />
+                <Skeleton className="h-4 w-1/4" />
+                <Skeleton className="h-4 w-1/4" />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ── Analytics Tab ───────────────────────────────────────────────────── */}
       {tab === 'analytics' && <AnalyticsDashboard />}
 
       {/* ── Rescues Tab ─────────────────────────────────────────────────────── */}
       {tab === 'rescues' && !loading && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+        >
           <div className="px-6 py-4 border-b border-gray-100">
             <h3 className="font-bold text-gray-800">All Rescue Requests ({rescues.length})</h3>
           </div>
@@ -184,9 +209,14 @@ export default function AdminPanel() {
                 <tr><Th>Animal</Th><Th>Reporter</Th><Th>Location</Th><Th>Volunteer</Th><Th>Status</Th><Th>Actions</Th></tr>
               </thead>
               <tbody>
-                {rescues.map((r) => (
-                  <>
-                    <tr key={r._id} className={`hover:bg-gray-50 ${rejectingId === r._id ? 'bg-red-50' : ''}`}>
+                {rescues.map((r, idx) => (
+                  <React.Fragment key={r._id}>
+                    <motion.tr
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: Math.min(idx * 0.04, 0.4) }}
+                      className={`hover:bg-gray-50 ${rejectingId === r._id ? 'bg-red-50' : ''}`}
+                    >
                       <Td>{r.animalType}</Td>
                       <Td>{r.reporter?.name}</Td>
                       <Td className="max-w-[180px] truncate">{r.location?.address}</Td>
@@ -214,25 +244,46 @@ export default function AdminPanel() {
                         <div className="flex gap-1.5 flex-wrap">
                           {r.status === 'Pending Review' && (
                             <>
-                              <button onClick={() => approveRescue(r._id)} className="px-2.5 py-1 bg-green-700 hover:bg-green-800 text-white text-xs font-semibold rounded-lg transition-colors">Approve</button>
-                              <button
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => approveRescue(r._id)}
+                                className="px-2.5 py-1 bg-green-700 hover:bg-green-800 text-white text-xs font-semibold rounded-lg transition-colors"
+                              >
+                                Approve
+                              </motion.button>
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                                 onClick={() => rejectingId === r._id ? cancelReject() : openRejectForm(r._id)}
                                 className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-colors ${rejectingId === r._id ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' : 'bg-amber-500 hover:bg-amber-600 text-white'}`}
                               >
                                 {rejectingId === r._id ? 'Cancel' : 'Reject'}
-                              </button>
+                              </motion.button>
                             </>
                           )}
-                          <button onClick={() => deleteRescue(r._id)} className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition-colors">Delete</button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => deleteRescue(r._id)}
+                            className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition-colors"
+                          >
+                            Delete
+                          </motion.button>
                         </div>
                       </Td>
-                    </tr>
-
+                    </motion.tr>
+ 
                     {rejectingId === r._id && (
-                      <tr key={`${r._id}-reject`} className="bg-red-50 border-b border-red-100">
-                        <td colSpan={5} className="px-6 py-4">
-                          <div className="flex flex-col sm:flex-row gap-3 items-start">
-                            <div className="flex-1">
+                      <tr className="bg-red-50 border-b border-red-100">
+                        <td colSpan={6} className="px-6 py-4">
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            transition={{ duration: 0.2 }}
+                            className="flex flex-col sm:flex-row gap-3 items-start overflow-hidden"
+                          >
+                            <div className="flex-1 w-full">
                               <label className="block text-xs font-semibold text-red-700 mb-1">Rejection Reason *</label>
                               <textarea
                                 autoFocus rows={2}
@@ -243,26 +294,44 @@ export default function AdminPanel() {
                               />
                             </div>
                             <div className="flex gap-2 mt-4 sm:mt-5 flex-shrink-0">
-                              <button onClick={() => confirmReject(r._id)} disabled={rejectLoading || !rejectReason.trim()} className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-xs font-semibold rounded-lg transition-colors">
+                              <motion.button
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                                onClick={() => confirmReject(r._id)}
+                                disabled={rejectLoading || !rejectReason.trim()}
+                                className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-xs font-semibold rounded-lg transition-colors"
+                              >
                                 {rejectLoading ? 'Rejecting...' : 'Confirm Reject'}
-                              </button>
-                              <button onClick={cancelReject} className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-semibold rounded-lg transition-colors">Cancel</button>
+                              </motion.button>
+                              <motion.button
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                                onClick={cancelReject}
+                                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-semibold rounded-lg transition-colors"
+                              >
+                                Cancel
+                              </motion.button>
                             </div>
-                          </div>
+                          </motion.div>
                         </td>
                       </tr>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* ── Users Tab ───────────────────────────────────────────────────────── */}
       {tab === 'users' && !loading && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+        >
           <div className="px-6 py-4 border-b border-gray-100">
             <h3 className="font-bold text-gray-800">All Users ({users.length})</h3>
             <p className="text-xs text-gray-400 mt-0.5">Role changes require confirmation. You cannot change your own role.</p>
@@ -271,10 +340,16 @@ export default function AdminPanel() {
             <table className="w-full">
               <thead><tr><Th>Name</Th><Th>Email</Th><Th>Phone</Th><Th>Role</Th><Th>Change Role</Th></tr></thead>
               <tbody>
-                {users.map((u) => {
+                {users.map((u, idx) => {
                   const isSelf = u._id === currentAdmin?._id
                   return (
-                    <tr key={u._id} className={`hover:bg-gray-50 ${isSelf ? 'bg-amber-50' : ''}`}>
+                    <motion.tr
+                      key={u._id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: Math.min(idx * 0.04, 0.4) }}
+                      className={`hover:bg-gray-50 ${isSelf ? 'bg-amber-50' : ''}`}
+                    >
                       <Td>
                         {u.name}
                         {isSelf && <span className="ml-2 text-xs text-amber-600 font-semibold">(you)</span>}
@@ -314,18 +389,23 @@ export default function AdminPanel() {
                           </select>
                         )}
                       </Td>
-                    </tr>
+                    </motion.tr>
                   )
                 })}
               </tbody>
             </table>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* ── Donations Tab ────────────────────────────────────────────────────── */}
       {tab === 'donations' && !loading && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+        >
           <div className="px-6 py-4 border-b border-gray-100">
             <h3 className="font-bold text-gray-800">All Donation Campaigns ({donations.length})</h3>
           </div>
@@ -333,8 +413,14 @@ export default function AdminPanel() {
             <table className="w-full">
               <thead><tr><Th>Title</Th><Th>Animal</Th><Th>Target</Th><Th>Collected</Th><Th>Donors</Th><Th>Status</Th><Th>Action</Th></tr></thead>
               <tbody>
-                {donations.map((d) => (
-                  <tr key={d._id} className="hover:bg-gray-50">
+                {donations.map((d, idx) => (
+                  <motion.tr
+                    key={d._id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: Math.min(idx * 0.04, 0.4) }}
+                    className="hover:bg-gray-50"
+                  >
                     <Td>{d.title}</Td>
                     <Td>{d.animal}</Td>
                     <Td>Rs.{d.targetAmount?.toLocaleString()}</Td>
@@ -352,52 +438,108 @@ export default function AdminPanel() {
                     </Td>
                     <Td>
                       {d.isActive && (
-                        <button onClick={() => closeCampaign(d._id)} className="text-xs text-red-600 hover:text-red-800 font-semibold border border-red-200 px-2 py-1 rounded bg-red-50 hover:bg-red-100 transition-colors">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => closeCampaign(d._id)}
+                          className="text-xs text-red-600 hover:text-red-800 font-semibold border border-red-200 px-2 py-1 rounded bg-red-50 hover:bg-red-100 transition-colors"
+                        >
                           Close
-                        </button>
+                        </motion.button>
                       )}
                     </Td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* ── Create Campaign Tab ──────────────────────────────────────────────── */}
       {tab === 'create-campaign' && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-lg">
-          <h3 className="text-lg font-bold text-gray-800 mb-5">Create Donation Campaign</h3>
-          <form onSubmit={createCampaign} className="space-y-4">
-            <div>
-              <label className={labelCls}>Campaign Title *</label>
-              <input type="text" placeholder="e.g. Help Bruno recover" value={newCampaign.title} onChange={(e) => setNewCampaign({ ...newCampaign, title: e.target.value })} required className={inputCls} />
+        <div className="grid md:grid-cols-2 gap-8 items-start">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+          >
+            <h3 className="text-lg font-bold text-gray-800 mb-5">Create Donation Campaign</h3>
+            <form onSubmit={createCampaign} className="space-y-4">
+              <div>
+                <label className={labelCls}>Campaign Title *</label>
+                <input type="text" placeholder="e.g. Help Bruno recover" value={newCampaign.title} onChange={(e) => setNewCampaign({ ...newCampaign, title: e.target.value })} required className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Animal *</label>
+                <input type="text" placeholder="e.g. Dog - Bruno" value={newCampaign.animal} onChange={(e) => setNewCampaign({ ...newCampaign, animal: e.target.value })} required className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Description *</label>
+                <textarea placeholder="Describe the animal's medical needs..." value={newCampaign.description} onChange={(e) => setNewCampaign({ ...newCampaign, description: e.target.value })} required rows={4} className={inputCls + ' resize-y'} />
+              </div>
+              <div>
+                <label className={labelCls}>Target Amount (Rs.) *</label>
+                <input type="number" min="1" placeholder="e.g. 10000" value={newCampaign.targetAmount} onChange={(e) => setNewCampaign({ ...newCampaign, targetAmount: e.target.value })} required className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Deadline (Future Date) *</label>
+                <input type="date" min={new Date().toISOString().split('T')[0]} value={newCampaign.deadline} onChange={(e) => setNewCampaign({ ...newCampaign, deadline: e.target.value })} required className={inputCls} />
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                className="w-full py-3 bg-green-800 hover:bg-green-900 text-white font-semibold rounded-lg transition-colors"
+              >
+                Create Campaign
+              </motion.button>
+            </form>
+          </motion.div>
+
+          {/* Right side info panel */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="hidden md:flex flex-col rounded-xl overflow-hidden shadow-sm border border-gray-200 h-full max-h-[600px]"
+          >
+            <div className="h-56 w-full shrink-0">
+              <img 
+                src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80" 
+                alt="Happy rescued dog" 
+                className="w-full h-full object-cover"
+              />
             </div>
-            <div>
-              <label className={labelCls}>Animal *</label>
-              <input type="text" placeholder="e.g. Dog - Bruno" value={newCampaign.animal} onChange={(e) => setNewCampaign({ ...newCampaign, animal: e.target.value })} required className={inputCls} />
+            <div className="p-8 bg-green-50 flex-grow flex flex-col justify-center text-center items-center">
+              <h4 className="text-2xl font-bold text-green-900 mb-4">Give Them a Second Chance</h4>
+              <p className="text-green-700 leading-relaxed mb-6 max-w-sm text-sm">
+                Every campaign you create directly funds medical treatments, emergency surgeries, and safe shelter for animals that have nowhere else to turn.
+              </p>
+              <div className="grid grid-cols-2 gap-4 w-full max-w-xs">
+                <div className="bg-white px-4 py-3 rounded-xl shadow-sm border border-green-100">
+                  <span className="block text-xl font-black text-green-800 mb-1">100%</span>
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Transparency</span>
+                </div>
+                <div className="bg-white px-4 py-3 rounded-xl shadow-sm border border-green-100">
+                  <span className="block text-xl font-black text-green-800 mb-1">0%</span>
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Platform Fee</span>
+                </div>
+              </div>
             </div>
-            <div>
-              <label className={labelCls}>Description *</label>
-              <textarea placeholder="Describe the animal's medical needs..." value={newCampaign.description} onChange={(e) => setNewCampaign({ ...newCampaign, description: e.target.value })} required rows={4} className={inputCls + ' resize-y'} />
-            </div>
-            <div>
-              <label className={labelCls}>Target Amount (Rs.) *</label>
-              <input type="number" min="1" placeholder="e.g. 10000" value={newCampaign.targetAmount} onChange={(e) => setNewCampaign({ ...newCampaign, targetAmount: e.target.value })} required className={inputCls} />
-            </div>
-            <div>
-              <label className={labelCls}>Deadline (Future Date) *</label>
-              <input type="date" min={new Date().toISOString().split('T')[0]} value={newCampaign.deadline} onChange={(e) => setNewCampaign({ ...newCampaign, deadline: e.target.value })} required className={inputCls} />
-            </div>
-            <button type="submit" className="w-full py-3 bg-green-800 hover:bg-green-900 text-white font-semibold rounded-lg transition-colors">Create Campaign</button>
-          </form>
+          </motion.div>
         </div>
       )}
 
       {/* ── Audit Log Tab ────────────────────────────────────────────────────── */}
       {tab === 'audit-log' && !loading && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+        >
           <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
             <span className="text-lg">🔒</span>
             <div>
@@ -414,10 +556,16 @@ export default function AdminPanel() {
                   <tr><Th>Date</Th><Th>Admin</Th><Th>Action</Th><Th>Target</Th><Th>Change</Th></tr>
                 </thead>
                 <tbody>
-                  {auditLogs.map((log) => {
+                  {auditLogs.map((log, idx) => {
                     const a = ACTION_LABELS[log.action] || { label: log.action, color: 'bg-gray-100 text-gray-700' }
                     return (
-                      <tr key={log._id} className="hover:bg-gray-50">
+                      <motion.tr
+                        key={log._id}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: Math.min(idx * 0.03, 0.4) }}
+                        className="hover:bg-gray-50"
+                      >
                         <Td className="whitespace-nowrap text-xs text-gray-500">
                           {new Date(log.createdAt).toLocaleString()}
                         </Td>
@@ -431,14 +579,14 @@ export default function AdminPanel() {
                             ? <span><span className="text-red-500 line-through">{log.oldValue}</span> → <span className="text-green-600 font-semibold">{log.newValue}</span></span>
                             : log.newValue || log.oldValue || '—'}
                         </Td>
-                      </tr>
+                      </motion.tr>
                     )
                   })}
                 </tbody>
               </table>
             )}
           </div>
-        </div>
+        </motion.div>
       )}
     </div>
   )

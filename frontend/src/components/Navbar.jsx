@@ -178,7 +178,7 @@ export default function Navbar() {
                   <Link 
                     to="/login" 
                     onClick={close}
-                    className="flex items-center justify-center gap-2 p-3 border border-gray-200 rounded-xl text-sm font-semibold hover:bg-gray-50"
+                    className="flex items-center justify-center gap-2 p-3 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50"
                   >
                     <LogIn className="w-4 h-4" /> Login
                   </Link>

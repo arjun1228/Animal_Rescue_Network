@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
 import RescueCard from '../components/RescueCard'
+import Skeleton from '../components/Skeleton'
 import { motion } from 'framer-motion'
 
 export default function Dashboard() {
@@ -46,8 +47,25 @@ export default function Dashboard() {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center h-64 text-gray-400 text-lg">
-        Loading dashboard...
+      <div className="max-w-5xl mx-auto px-6 py-8 pt-24">
+        <div className="flex justify-between mb-6">
+          <Skeleton className="h-10 w-48" />
+          <Skeleton className="h-10 w-32 rounded-lg" />
+        </div>
+        <Skeleton className="h-32 w-full rounded-xl mb-6" />
+        <div className="flex gap-2 mb-6">
+          <Skeleton className="h-10 w-32 rounded-lg" />
+          <Skeleton className="h-10 w-40 rounded-lg" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {[...Array(3)].map((_, i) => (
+             <div key={i} className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm p-4 h-56 flex flex-col">
+                <Skeleton className="h-5 w-20 mb-3 rounded-full" />
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2 mb-4" />
+             </div>
+          ))}
+        </div>
       </div>
     )
 

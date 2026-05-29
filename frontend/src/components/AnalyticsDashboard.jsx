@@ -4,20 +4,32 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Cell, LabelList,
 } from 'recharts'
+import Skeleton from '../components/Skeleton'
+import { motion } from 'framer-motion'
 
 // ── Metric card ──────────────────────────────────────────────────────────────
-function MetricCard({ label, value, icon, color, sub }) {
+function MetricCard({ label, value, icon, color, sub, index = 0 }) {
   return (
-    <div className={`bg-white rounded-xl border shadow-sm p-5 flex items-start gap-4 border-gray-200`}>
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${color}`}>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.1 }}
+      className={`bg-white rounded-xl border shadow-sm p-5 flex items-start gap-4 border-gray-200 hover:shadow-md transition-all`}
+    >
+      <motion.div 
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: 'spring', delay: index * 0.1 + 0.2 }}
+        className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${color}`}
+      >
         {icon}
-      </div>
+      </motion.div>
       <div className="min-w-0">
         <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">{label}</p>
         <p className="text-2xl font-bold text-gray-900 mt-0.5">{value ?? '—'}</p>
         {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
       </div>
-    </div>
+    </motion.div>
   )
 }
 
@@ -88,10 +100,34 @@ export default function AnalyticsDashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-gray-400 text-sm">Loading analytics…</p>
+      <div className="space-y-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-start gap-4">
+              <Skeleton className="w-12 h-12 rounded-xl flex-shrink-0" />
+              <div className="flex-1">
+                <Skeleton className="h-3 w-16 mb-2" />
+                <Skeleton className="h-6 w-12 mb-1" />
+                <Skeleton className="h-2 w-24" />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 h-[300px] flex flex-col">
+            <Skeleton className="h-5 w-32 mb-2" />
+            <Skeleton className="h-3 w-24 mb-6" />
+            <Skeleton className="flex-grow w-full rounded-lg" />
+          </div>
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 h-[300px]">
+            <Skeleton className="h-5 w-40 mb-2" />
+            <Skeleton className="h-3 w-24 mb-6" />
+            <div className="space-y-6 mt-8">
+               <Skeleton className="h-6 w-full" />
+               <Skeleton className="h-6 w-5/6" />
+               <Skeleton className="h-6 w-4/6" />
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -108,15 +144,15 @@ export default function AnalyticsDashboard() {
 
       {/* ── Metric Cards ─────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard label="Total Rescues"    value={overview?.totalRescues}      icon="🐾" color="bg-green-50" />
-        <MetricCard label="Completed"        value={overview?.completedRescues}   icon="✅" color="bg-emerald-50"
+        <MetricCard index={0} label="Total Rescues"    value={overview?.totalRescues}      icon="🐾" color="bg-green-50" />
+        <MetricCard index={1} label="Completed"        value={overview?.completedRescues}   icon="✅" color="bg-emerald-50"
           sub={overview?.totalRescues ? `${Math.round((overview.completedRescues / overview.totalRescues) * 100)}% completion rate` : null}
         />
-        <MetricCard label="Total Raised"     value={`₹${(overview?.totalAmountRaised || 0).toLocaleString('en-IN')}`}
+        <MetricCard index={2} label="Total Raised"     value={`₹${(overview?.totalAmountRaised || 0).toLocaleString('en-IN')}`}
           icon="💰" color="bg-amber-50"
           sub={`across ${overview?.totalDonations || 0} campaigns`}
         />
-        <MetricCard label="Active Volunteers" value={overview?.activeVolunteers}  icon="🙋" color="bg-blue-50"
+        <MetricCard index={3} label="Active Volunteers" value={overview?.activeVolunteers}  icon="🙋" color="bg-blue-50"
           sub={`of ${overview?.totalUsers} total users`}
         />
       </div>
@@ -125,7 +161,12 @@ export default function AnalyticsDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Rescues per month bar chart */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 hover:shadow-md transition-shadow"
+        >
           <h3 className="font-bold text-gray-800 mb-1">Rescues Submitted</h3>
           <p className="text-xs text-gray-400 mb-5">Last 6 months</p>
           {monthlyData.every((d) => d.count === 0) ? (
@@ -146,10 +187,15 @@ export default function AnalyticsDashboard() {
               </BarChart>
             </ResponsiveContainer>
           )}
-        </div>
+        </motion.div>
 
         {/* Donations by campaign horizontal bar */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 hover:shadow-md transition-shadow"
+        >
           <h3 className="font-bold text-gray-800 mb-1">Donations by Campaign</h3>
           <p className="text-xs text-gray-400 mb-5">Collected vs Target (₹)</p>
           {campaignData.length === 0 ? (
@@ -181,11 +227,16 @@ export default function AnalyticsDashboard() {
               })}
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
 
       {/* ── Status breakdown ─────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+        className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 hover:shadow-md transition-shadow"
+      >
         <h3 className="font-bold text-gray-800 mb-4">Rescue Status Breakdown</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {[
@@ -199,14 +250,21 @@ export default function AnalyticsDashboard() {
             </div>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* ── CSV Exports ──────────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+        className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 hover:shadow-md transition-shadow"
+      >
         <h3 className="font-bold text-gray-800 mb-1">Export Data</h3>
         <p className="text-xs text-gray-400 mb-4">Download full records as CSV files for offline analysis.</p>
         <div className="flex flex-wrap gap-3">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => downloadCSV('rescues/export', 'rescues.csv')}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold rounded-lg transition-colors shadow-sm"
           >
@@ -214,8 +272,10 @@ export default function AnalyticsDashboard() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
             Export Rescues CSV
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => downloadCSV('donations/export', 'donations.csv')}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold rounded-lg transition-colors shadow-sm"
           >
@@ -223,9 +283,9 @@ export default function AnalyticsDashboard() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
             Export Donations CSV
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
 
     </div>
   )

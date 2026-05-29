@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { motion } from 'framer-motion'
+import Skeleton from '../components/Skeleton'
 import { Heart, Search, ArrowRight } from 'lucide-react'
 
 export default function DonationPortal() {
@@ -57,7 +58,22 @@ export default function DonationPortal() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1,2,3,4,5,6].map(i => (
-              <div key={i} className="bg-white rounded-3xl h-96 animate-pulse"></div>
+              <div key={i} className="bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col h-[480px]">
+                  <Skeleton className="h-56 w-full rounded-none" />
+                  <div className="p-6 flex flex-col flex-grow">
+                    <Skeleton className="h-6 w-3/4 mb-4" />
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-5/6 mb-6" />
+                    <div className="mt-auto">
+                      <div className="mb-2 flex justify-between">
+                        <Skeleton className="h-8 w-1/4" />
+                        <Skeleton className="h-8 w-1/4" />
+                      </div>
+                      <Skeleton className="h-2.5 w-full rounded-full mb-6" />
+                      <Skeleton className="h-12 w-full rounded-xl" />
+                    </div>
+                  </div>
+              </div>
             ))}
           </div>
         ) : campaigns.length === 0 ? (

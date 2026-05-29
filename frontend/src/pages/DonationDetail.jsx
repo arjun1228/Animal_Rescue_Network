@@ -4,6 +4,7 @@ import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, ArrowLeft, ShieldCheck, CreditCard, Lock, Clock, Calendar } from 'lucide-react'
 import toast from 'react-hot-toast'
+import Skeleton from '../components/Skeleton'
 
 export default function DonationDetail() {
   const { id } = useParams()
@@ -70,8 +71,38 @@ export default function DonationDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream pt-24 pb-20 flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-cream to-amber-50 pt-24 pb-20 relative">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <Skeleton className="h-6 w-48 mb-8" />
+          <div className="flex flex-col lg:flex-row gap-10">
+            <div className="lg:w-[55%]">
+              <div className="bg-white rounded-3xl p-8 md:p-10 shadow-sm border border-gray-100">
+                <div className="flex items-start gap-4 mb-8">
+                  <Skeleton className="w-16 h-16 rounded-2xl" />
+                  <div className="flex-1">
+                    <Skeleton className="h-8 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                </div>
+                <div className="space-y-6 mt-8">
+                  <Skeleton className="h-10 w-full rounded-xl" />
+                  <Skeleton className="h-24 w-full rounded-xl" />
+                  <Skeleton className="h-12 w-full rounded-xl" />
+                </div>
+              </div>
+            </div>
+            <div className="lg:w-[45%] space-y-8">
+              <div className="bg-white rounded-3xl overflow-hidden border border-gray-100">
+                <Skeleton className="h-48 w-full rounded-none" />
+                <div className="p-6">
+                  <Skeleton className="h-24 w-full mb-6 rounded-xl" />
+                  <Skeleton className="h-8 w-full mb-2" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }

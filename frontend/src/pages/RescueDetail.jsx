@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 import { MapContainer, TileLayer, Marker } from 'react-leaflet'
 import L from 'leaflet'
+import Skeleton from '../components/Skeleton'
 
 // Fix Leaflet icon paths broken by Vite
 delete L.Icon.Default.prototype._getIconUrl
@@ -147,7 +148,22 @@ export default function RescueDetail() {
     }
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-gray-400 text-lg">Loading...</div>
+  if (loading) return (
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 pt-24">
+      <Skeleton className="h-8 w-24 rounded-lg mb-4" />
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex justify-between mb-4">
+          <Skeleton className="h-8 w-1/3" />
+          <Skeleton className="h-6 w-24 rounded-full" />
+        </div>
+        <Skeleton className="h-4 w-1/4 mb-2" />
+        <Skeleton className="h-4 w-full mb-4" />
+        <Skeleton className="h-48 w-full rounded-lg mb-4" />
+        <Skeleton className="h-4 w-1/2 mb-2" />
+        <Skeleton className="h-4 w-1/3" />
+      </div>
+    </div>
+  )
   if (error && !rescue) return (
     <div className="max-w-2xl mx-auto px-6 py-8">
       <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">{error}</div>
