@@ -13,12 +13,13 @@
 
 A modern, high-performance full-stack MERN platform. Connects everyday citizens, dedicated volunteers, generous donors, and platform administrators to streamline stray animal reporting, coordinate rescue operations, and raise funds for veterinary treatments.
 
-[Features](#-key-features) · [Roles & Permissions](#-roles--permissions-matrix) · [Project Structure](#-project-structure) · [Database Models](#-database-models-backendmodels) · [API Endpoints](#-api-routes--controllers-backend) · [Getting Started](#-setup--installation)
+[Features](#features) · [Roles & Permissions](#roles-permissions) · [Project Structure](#project-structure) · [Database Models](#database-models) · [API Endpoints](#api-endpoints)
 
 </div>
 
 ---
 
+<span id="features"></span>
 ## ✨ Key Features
 
 ### 👥 Role-Based Access Control
@@ -45,6 +46,7 @@ JWT-based sessions stored in secure `HttpOnly` cookies, shielding the platform f
 
 ---
 
+<span id="roles-permissions"></span>
 ## 👥 Roles & Permissions Matrix
 
 | Page / Feature | Citizen | Volunteer | Donor | Admin |
@@ -62,6 +64,7 @@ JWT-based sessions stored in secure `HttpOnly` cookies, shielding the platform f
 
 ---
 
+<span id="project-structure"></span>
 ## 📂 Project Structure
 
 ```text
@@ -90,6 +93,7 @@ Animal_Rescue/
 
 ---
 
+<span id="database-models"></span>
 ## 🗄️ Database Models (backend/models/)
 
 ### 👤 User (`User.js`)
@@ -154,51 +158,73 @@ Animal_Rescue/
 
 ---
 
+<span id="api-endpoints"></span>
 ## 🔌 API Routes & Controllers (backend/)
 
 All route paths prefix with `/api`.
 
-| Module | Route | Method | Access | Description |
-| :--- | :--- | :---: | :---: | :--- |
-| **Auth** | `/api/auth/register` | `POST` | Public | Register new citizen/volunteer |
-| **Auth** | `/api/auth/login` | `POST` | Public | Login & receive cookie |
-| **Auth** | `/api/auth/logout` | `POST` | Public | Clear login cookie |
-| **Auth** | `/api/auth/me` | `GET` | Protected | Restore active user session |
-| **Auth** | `/api/api/auth/forgot-password` | `POST` | Public | Generate reset token email |
-| **Auth** | `/api/auth/reset-password/:token` | `POST` | Public | Set new password |
-| **Rescue** | `/api/rescue` | `GET` | Protected | Fetch approved rescue requests |
-| **Rescue** | `/api/rescue/my` | `GET` | Protected | Fetch reporter's own submissions |
-| **Rescue** | `/api/rescue/claimed`| `GET` | Vol/Admin | Fetch claimed tasks |
-| **Rescue** | `/api/rescue/nearby` | `GET` | Protected | Query rescues within search radius |
-| **Rescue** | `/api/rescue/:id` | `GET` | Protected | Fetch rescue details |
-| **Rescue** | `/api/rescue` | `POST` | Protected | Report animal (+ up to 3 photos) |
-| **Rescue** | `/api/rescue/:id/claim`| `PUT` | Vol/Admin | Claim a pending request |
-| **Rescue** | `/api/rescue/:id/status`| `PUT` | Protected | Update rescue progress status |
-| **Rescue** | `/api/rescue/:id/rate` | `POST` | Protected | Rate volunteer (reporter only) |
-| **Donation** | `/api/donation` | `GET` | Public | Browse ongoing campaigns |
-| **Donation** | `/api/donation/:id` | `GET` | Public | Fetch campaign profile & list |
-| **Donation** | `/api/donation/:id/donate`| `POST` | Public | Contribute (Rate limited) |
-| **Donation** | `/api/donation` | `POST` | Admin | Launch new campaign |
-| **Donation** | `/api/donation/entry/:id`| `DELETE`| Admin | Delete donation record |
-| **Admin** | `/api/admin/users` | `GET` | Admin | List all registered users |
-| **Admin** | `/api/admin/users/:id/role`| `PUT` | Admin | Modify user roles (Audited) |
-| **Admin** | `/api/admin/rescue` | `GET` | Admin | Monitor all status boards |
-| **Admin** | `/api/admin/rescue/:id/approve`| `PUT`| Admin | Approve pending request (Audited) |
-| **Admin** | `/api/admin/rescue/:id/reject`| `PATCH`| Admin | Reject request (Audited) |
-| **Admin** | `/api/admin/rescue/:id` | `DELETE`| Admin | Delete request (Audited) |
-| **Admin** | `/api/admin/rescues/export`| `GET` | Admin | Download rescues CSV |
-| **Admin** | `/api/admin/donations` | `GET` | Admin | Monitor all campaign data |
-| **Admin** | `/api/admin/campaigns/:id/close`| `PATCH`| Admin | Close campaign manually (Audited) |
-| **Admin** | `/api/admin/donations/export`| `GET` | Admin | Download donations CSV |
-| **Admin** | `/api/admin/analytics/overview`| `GET` | Admin | Get main overview counts |
-| **Admin** | `/api/admin/analytics/rescues-by-month`| `GET`| Admin| Monthly rescue charts data |
-| **Admin** | `/api/admin/analytics/donations-by-campaign`| `GET`| Admin| Campaign progress stats |
-| **Admin** | `/api/admin/audit-logs`| `GET` | Admin | Fetch admin action audit trail |
-| **Notify** | `/api/notifications` | `GET` | Protected | Fetch current user notifications |
-| **Notify** | `/api/notifications/read-all`| `PATCH`| Protected | Mark all read |
-| **Notify** | `/api/notifications/:id/read`| `PATCH`| Protected | Mark individual read |
-| **Volunteer**| `/api/volunteer/stats` | `GET` | Vol/Admin | Get rescue/rating stats |
-| **Volunteer**| `/api/volunteer/availability`| `PATCH`| Vol/Admin | Toggle active status |
+### 🌐 Public API Routes (No Auth Required)
+These endpoints are accessible to anonymous site visitors (e.g. registration, logins, browsing campaigns).
+
+| Endpoint | Method | Controller ➡️ Method | Description |
+| :--- | :---: | :--- | :--- |
+| `/api/auth/register` | `POST` | `authController.js` ➡️ `registerUser` | Register a new user |
+| `/api/auth/login` | `POST` | `authController.js` ➡️ `loginUser` | Log in and receive secure session cookie |
+| `/api/auth/logout` | `POST` | `authController.js` ➡️ `logoutUser` | Clear active cookie session |
+| `/api/auth/forgot-password` | `POST` | `authController.js` ➡️ `forgotPassword` | Request password reset token email |
+| `/api/auth/reset-password/:token`| `POST` | `authController.js` ➡️ `resetPassword` | Complete password reset via token |
+| `/api/donation` | `GET` | `donationController.js` ➡️ `getDonations` | Browse active donation campaigns |
+| `/api/donation/:id` | `GET` | `donationController.js` ➡️ `getDonationById`| Fetch detailed campaign page and donors list |
+| `/api/donation/:id/donate` | `POST` | `donationController.js` ➡️ `makeDonation` | Donate to a campaign (Rate limited) |
+
+### 👤 Citizen / Authenticated User Routes (Requires Login)
+Accessible by any logged-in user (Citizen, Volunteer, or Admin).
+
+| Endpoint | Method | Controller ➡️ Method | Description |
+| :--- | :---: | :--- | :--- |
+| `/api/auth/me` | `GET` | `authController.js` ➡️ `getMe` | Retrieve logged-in user profile details |
+| `/api/rescue` | `GET` | `rescueController.js` ➡️ `getRescueRequests` | Fetch approved rescue requests |
+| `/api/rescue/my` | `GET` | `rescueController.js` ➡️ `getMyRescues` | Fetch rescue requests reported by this user |
+| `/api/rescue/nearby` | `GET` | `rescueController.js` ➡️ `getNearbyRescues` | Find nearby rescues within radius |
+| `/api/rescue/:id` | `GET` | `rescueController.js` ➡️ `getRescueById` | Get details of a single rescue case |
+| `/api/rescue` | `POST` | `rescueController.js` ➡️ `createRescueRequest`| Submit a new rescue request (up to 3 photos) |
+| `/api/rescue/:id/status` | `PUT` | `rescueController.js` ➡️ `updateRescueStatus`| Update rescue request status progress |
+| `/api/rescue/:id/rate` | `POST` | `rescueController.js` ➡️ `rateVolunteer` | Rate volunteer (reporter only, single entry) |
+| `/api/notifications` | `GET` | `notificationController.js` ➡️ `getMyNotifications` | Get list of user notifications |
+| `/api/notifications/read-all`| `PATCH`| `notificationController.js` ➡️ `markAllRead` | Mark all notifications read |
+| `/api/notifications/:id/read`| `PATCH`| `notificationController.js` ➡️ `markOneRead` | Mark single notification as read |
+
+### 🏃‍♂️ Volunteer Routes (Requires Volunteer/Admin Role)
+Only accessible to users with `'volunteer'` or `'admin'` roles.
+
+| Endpoint | Method | Controller ➡️ Method | Description |
+| :--- | :---: | :--- | :--- |
+| `/api/rescue/claimed` | `GET` | `rescueController.js` ➡️ `getClaimedRescues`| Fetch rescue requests claimed by volunteer |
+| `/api/rescue/:id/claim` | `PUT` | `rescueController.js` ➡️ `claimRescue` | Claim a pending approved rescue request |
+| `/api/volunteer/stats` | `GET` | `volunteerController.js` ➡️ `getVolunteerStats`| Fetch rescue stats and ratings |
+| `/api/volunteer/availability` | `PATCH`| `volunteerController.js` ➡️ `toggleAvailability`| Toggle active availability status |
+
+### 👑 Admin Routes (Requires Admin Privileges)
+Restricted exclusively to users with `'admin'` role.
+
+| Endpoint | Method | Controller ➡️ Method | Description |
+| :--- | :---: | :--- | :--- |
+| `/api/admin/users` | `GET` | `adminController.js` ➡️ `getAllUsers` | Fetch list of all registered users |
+| `/api/admin/users/:id/role`| `PUT` | `adminController.js` ➡️ `updateUserRole` | Update user roles (Citizen/Volunteer/Admin) (Audited) |
+| `/api/admin/rescue` | `GET` | `adminController.js` ➡️ `getAllRescues` | View all rescues globally |
+| `/api/admin/rescue/:id/approve`| `PUT`| `adminController.js` ➡️ `approveRescue` | Approve a submitted rescue request (Audited) |
+| `/api/admin/rescue/:id/reject`| `PATCH`| `adminController.js` ➡️ `rejectRescue` | Reject a submitted rescue request (Audited) |
+| `/api/admin/rescue/:id` | `DELETE`| `adminController.js` ➡️ `deleteRescue` | Delete a rescue request permanently (Audited) |
+| `/api/admin/rescues/export`| `GET` | `analyticsController.js` ➡️ `exportRescuesCSV`| Export rescues to CSV format |
+| `/api/admin/donations` | `GET` | `adminController.js` ➡️ `getAllDonations` | Retrieve all donation campaigns |
+| `/api/admin/campaigns/:id/close`| `PATCH`| `adminController.js` ➡️ `closeCampaign` | Terminate campaign manually (Audited) |
+| `/api/admin/donations/export`| `GET` | `analyticsController.js` ➡️ `exportDonationsCSV`| Export donation transactions to CSV format |
+| `/api/admin/analytics/overview`| `GET`| `analyticsController.js` ➡️ `getOverview` | Get general system stats and totals |
+| `/api/admin/analytics/rescues-by-month`| `GET`| `analyticsController.js` ➡️ `getRescuesByMonth`| Monthly rescue request distribution metrics |
+| `/api/admin/analytics/donations-by-campaign`| `GET`| `analyticsController.js` ➡️ `getDonationsByCampaign`| Campaign target progress values |
+| `/api/admin/audit-logs` | `GET` | `adminController.js` ➡️ `getAuditLogs` | Retrieve platform operations audit history |
+| `/api/donation` | `POST` | `donationController.js` ➡️ `createDonation`| Create a new donation campaign |
+| `/api/donation/entry/:id` | `DELETE`| `donationController.js` ➡️ `deleteDonationEntry`| Delete specific donation transaction record |
 
 ---
 
