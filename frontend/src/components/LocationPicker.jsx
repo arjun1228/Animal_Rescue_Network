@@ -91,7 +91,7 @@ export default function LocationPicker({ onLocationChange }) {
         reverseGeocode(p)
       },
       () => {}, // silently fall back to Mumbai
-      { timeout: 6000 }
+      { enableHighAccuracy: false, timeout: 15000, maximumAge: 30000 }
     )
   }, [reverseGeocode])
 
@@ -109,7 +109,7 @@ export default function LocationPicker({ onLocationChange }) {
         setGeocoding(false)
         alert('Could not fetch location: ' + err.message)
       },
-      { timeout: 10000 }
+      { enableHighAccuracy: false, timeout: 20000, maximumAge: 30000 }
     )
   }
 

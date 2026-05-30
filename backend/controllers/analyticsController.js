@@ -1,5 +1,6 @@
 const RescueRequest = require('../models/RescueRequest');
 const Donation = require('../models/Donation');
+const DonationEntry = require('../models/DonationEntry');
 const User = require('../models/User');
 
 // ── Helper: escape CSV field ─────────────────────────────────────────────────
@@ -91,6 +92,14 @@ const getDonationsByCampaign = async (req, res) => {
   try {
     const campaigns = await Donation.aggregate([
       {
+        $lookup: {
+          from: 'donationentries',
+          localField: '_id',
+          foreignField: 'campaignId',
+          as: 'transactions',
+        },
+      },
+      {
         $project: {
           title: 1,
           targetAmount: 1,
@@ -139,21 +148,34 @@ const exportRescuesCSV = async (req, res) => {
 // ── GET /api/admin/donations/export ──────────────────────────────────────────
 const exportDonationsCSV = async (req, res) => {
   try {
-    const campaigns = await Donation.find().populate('transactions.donor', 'name');
+    const campaigns = await Donation.find().sort({ createdAt: -1 });
+    const entries = await DonationEntry.find().sort({ donatedAt: -1 });
+
+    // Group entries by campaignId
+    const entriesByCampaign = {};
+    for (const entry of entries) {
+      const cid = entry.campaignId.toString();
+      if (!entriesByCampaign[cid]) {
+        entriesByCampaign[cid] = [];
+      }
+      entriesByCampaign[cid].push(entry);
+    }
 
     const header = ['Campaign', 'Donor', 'Amount (Rs.)', 'Message', 'Date'];
     const rows = [];
     for (const c of campaigns) {
-      if (c.transactions.length === 0) {
+      const cEntries = entriesByCampaign[c._id.toString()] || [];
+      if (cEntries.length === 0) {
         rows.push([c.title, '', '', '', '']);
       } else {
-        for (const t of c.transactions) {
+        for (const t of cEntries) {
+          const donorName = t.isAnonymous ? 'Anonymous' : (t.donorName || '');
           rows.push([
             c.title,
-            t.donorName || t.donor?.name || '',
+            donorName,
             t.amount,
             t.message || '',
-            t.createdAt ? new Date(t.createdAt).toLocaleDateString('en-IN') : '',
+            t.donatedAt ? new Date(t.donatedAt).toLocaleDateString('en-IN') : '',
           ]);
         }
       }

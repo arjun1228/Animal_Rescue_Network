@@ -5,7 +5,7 @@ import { FaFacebookF, FaTwitter, FaInstagram } from 'react-icons/fa'
 export default function Footer() {
   return (
     <footer className="bg-[#112a14] text-gray-300 pt-16 pb-8 px-6 mt-auto">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 border-b border-gray-700 pb-12">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 mb-12 border-b border-gray-700 pb-12">
         <div className="md:col-span-1">
           <Link to="/" className="flex items-center gap-2 mb-6 group">
             <div className="p-2 bg-primary/20 rounded-xl group-hover:bg-primary transition-colors">
@@ -57,24 +57,6 @@ export default function Footer() {
               <span>helpanimalrescuenetwork@gmail.com</span>
             </li>
           </ul>
-        </div>
-
-        <div>
-          <h4 className="text-lg font-semibold mb-6 text-white">Stay Updated</h4>
-          <p className="text-sm mb-4">Subscribe to our newsletter for rescue stories and updates.</p>
-          <form className="flex flex-col gap-3">
-            <input 
-              type="email" 
-              placeholder="Your email address" 
-              className="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-primary transition-colors text-white"
-            />
-            <button 
-              type="button" 
-              className="px-4 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
-            >
-              <Heart className="w-4 h-4" /> Subscribe
-            </button>
-          </form>
         </div>
       </div>
       

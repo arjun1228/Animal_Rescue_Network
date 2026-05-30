@@ -99,6 +99,11 @@ export default function RescueDetail() {
 
   const handleStatusUpdate = async () => {
     setError('')
+    if (newStatus === 'Completed' && !completionFile && !rescue.completionPhoto) {
+      setError('A completion proof photo is required to mark the rescue as Completed.')
+      toast.error('Proof photo is required.')
+      return
+    }
     try {
       let promise;
       if (completionFile && newStatus === 'Completed') {
@@ -306,7 +311,7 @@ export default function RescueDetail() {
               {/* Proof photo — only when Completed selected */}
               {newStatus === 'Completed' && (
                 <div className="w-full mt-2">
-                  <p className="text-xs text-gray-500 mb-2">📸 Upload proof of completion (optional, max 5 MB):</p>
+                  <p className="text-xs text-gray-500 mb-2">📸 Upload proof of completion (required, max 5 MB):</p>
                   {!completionFile ? (
                     <label className="flex items-center gap-2 cursor-pointer w-fit px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 text-sm font-medium rounded-lg border border-green-200 transition-colors">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

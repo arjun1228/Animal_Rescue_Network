@@ -153,6 +153,9 @@ const updateRescueStatus = async (req, res) => {
     if (!isVolunteer && !isAdmin) {
       return res.status(403).json({ message: 'Not authorized to update this rescue' });
     }
+    if (status === 'Completed' && !req.file && !rescue.completionPhoto) {
+      return res.status(400).json({ message: 'A completion proof photo is required to mark the rescue as Completed.' });
+    }
     rescue.status = status;
     // Save completion proof photo URL if provided
     if (req.file) {
