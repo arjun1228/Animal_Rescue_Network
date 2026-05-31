@@ -10,12 +10,22 @@
 [![Cron Jobs](https://img.shields.io/badge/Cron_Jobs-%23000000.svg?style=flat&logo=clockify&logoColor=white)](#-automated-background-jobs-cron)
 [![Media Cloudinary](https://img.shields.io/badge/Media_Cloudinary-%233448C5.svg?style=flat&logo=cloudinary&logoColor=white)](https://cloudinary.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-%2338B2AC.svg?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Vercel Frontend](https://img.shields.io/badge/Frontend-Vercel-%23000000.svg?style=flat&logo=vercel&logoColor=white)](https://animal-rescue-network-tau.vercel.app)
+[![Render Backend](https://img.shields.io/badge/Backend-Render-%2346E3B7.svg?style=flat&logo=render&logoColor=white)](https://animal-rescue-network.onrender.com)
 
 A modern, high-performance full-stack MERN platform. Connects everyday citizens, dedicated volunteers, generous donors, and platform administrators to streamline stray animal reporting, coordinate rescue operations, and raise funds for veterinary treatments.
 
-[Features](#features) · [Roles & Permissions](#roles-permissions) · [Project Structure](#project-structure) · [Database Models](#database-models) · [API Endpoints](#api-endpoints)
+[Live Deployments](#live-deployments) · [Features](#features) · [Roles & Permissions](#roles-permissions) · [Project Structure](#project-structure) · [Database Models](#database-models) · [API Endpoints](#api-endpoints)
 
 </div>
+
+---
+
+<span id="live-deployments"></span>
+## 🌐 Live Deployments
+
+*   **Live Web Application (Frontend):** [https://animal-rescue-network-tau.vercel.app](https://animal-rescue-network-tau.vercel.app)
+*   **Production API Server (Backend):** [https://animal-rescue-network.onrender.com](https://animal-rescue-network.onrender.com)
 
 ---
 
