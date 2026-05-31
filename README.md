@@ -332,3 +332,21 @@ cd frontend
 npm run dev
 ```
 Accessible at `http://localhost:5173`.
+
+---
+
+## 🌐 Deployment Details
+
+The production environments are deployed and configured as follows:
+
+### ⚡ Frontend (Vercel)
+*   **Deployment URL:** [https://animal-rescue-network-tau.vercel.app](https://animal-rescue-network-tau.vercel.app)
+*   **Platform:** [Vercel](https://vercel.com)
+*   **Notes:** Automatically builds from the `main` branch. Utilizes the `VITE_API_URL` environment variable pointing to the Render backend service.
+
+### ⚙️ Backend (Render)
+*   **Deployment URL:** [https://animal-rescue-network.onrender.com](https://animal-rescue-network.onrender.com)
+*   **Platform:** [Render](https://render.com)
+*   **Database:** Configured to connect to a production MongoDB Atlas cluster.
+*   **Notes:** Environment variables (`MONGO_URI`, `JWT_SECRET`, `CLOUDINARY_*`, `EMAIL_*`) are securely managed within the Render dashboard settings.
+
