@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -9,6 +11,11 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 const registerUser = async (req, res) => {
   const { name, email, phone, password, role } = req.body;
+
+  if (!name || !email || !phone || !password) {
+    return res.status(400).json({ message: 'All fields (name, email, phone, password) are required for standard registration' });
+  }
+
   try {
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -146,4 +153,61 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getMe, forgotPassword, resetPassword, logoutUser };
+// @desc    Google login / registration
+// @route   POST /api/auth/google
+const googleLogin = async (req, res) => {
+  const { idToken } = req.body;
+
+  if (!idToken) {
+    return res.status(400).json({ message: 'ID Token is required' });
+  }
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name } = payload;
+
+    let user = await User.findOne({ email });
+
+    if (user) {
+      if (!user.googleId) {
+        user.googleId = googleId;
+        await user.save();
+      }
+    } else {
+      user = await User.create({
+        name,
+        email,
+        googleId,
+        phone: 'Google Account',
+        role: 'citizen',
+      });
+    }
+
+    const token = generateToken(user._id);
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+    });
+  } catch (error) {
+    console.error('Google Auth Error:', error);
+    res.status(400).json({ message: 'Google authentication failed' });
+  }
+};
+
+module.exports = { registerUser, loginUser, getMe, forgotPassword, resetPassword, logoutUser, googleLogin };

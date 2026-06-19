@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
@@ -10,7 +10,57 @@ export default function Register() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
+  const isGoogleConfigured = import.meta.env.VITE_GOOGLE_CLIENT_ID && 
+    import.meta.env.VITE_GOOGLE_CLIENT_ID !== 'your_google_client_id.apps.googleusercontent.com';
+
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+
+  const handleGoogleSuccess = async (response) => {
+    const idToken = response.credential;
+    const promise = axios.post('/api/auth/google', { idToken });
+    
+    toast.promise(promise, {
+      loading: 'Registering with Google...',
+      success: 'Registered and logged in successfully!',
+      error: 'Google registration failed. Please try again.'
+    });
+
+    try {
+      const { data } = await promise;
+      login(data);
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Google register error:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (!isGoogleConfigured) return;
+    const initializeGoogle = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          callback: handleGoogleSuccess,
+        });
+        window.google.accounts.id.renderButton(
+          document.getElementById('googleSignUpDiv'),
+          { theme: 'outline', size: 'large' }
+        );
+      }
+    };
+
+    if (window.google) {
+      initializeGoogle();
+    } else {
+      const interval = setInterval(() => {
+        if (window.google) {
+          initializeGoogle();
+          clearInterval(interval);
+        }
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, [isGoogleConfigured]);
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -120,6 +170,25 @@ export default function Register() {
             Register
           </button>
         </form>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          </div>
+        </div>
+
+        {isGoogleConfigured ? (
+          <div className="flex justify-center w-full">
+            <div id="googleSignUpDiv" className="w-full flex justify-center"></div>
+          </div>
+        ) : (
+          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-3 text-xs text-center font-medium">
+            ⚠️ Google Sign-In is not configured. Add your Client ID in `frontend/.env`.
+          </div>
+        )}
 
         <p className="text-center text-sm text-gray-500 mt-5">
           Already have an account?{' '}
