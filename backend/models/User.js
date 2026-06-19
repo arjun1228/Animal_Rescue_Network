@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['citizen', 'volunteer', 'admin'],
+      enum: ['citizen', 'volunteer', 'donor', 'admin'],
       default: 'citizen',
     },
     // ── Volunteer-specific fields ──────────────────────────────────────────────
